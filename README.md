@@ -1,16 +1,20 @@
-# mynotes
+## Notes App 📝 📚 
 
-A new Flutter project.
+A note-sharing app where authors can create, edit, update, and delete notes on any topic. Other users can explore public notes and save favorites.
 
-## Getting Started
+### Features 🚀  
+- ✍️ **Create Notes** – Authors can write and share notes.  
+- ✏️ **Edit & Update** – Modify notes anytime.  
+- ❌ **Delete Notes** – Remove unwanted notes.  
+- 📖 **Read Notes** – Users can browse notes from all authors.  
+- ⭐ **Favorite Notes** – Save important notes for easy access.  
 
-This project is a starting point for a Flutter application.
+### Technologies Used 🛠️
+- Flutter.
+- Dart.
+- State Management - Provider.
+- Database - Firebase Firestore.
+- Auth Provider - Firebase Auth.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Contributing 🤝
+Pull requests are welcome. For major changes, please open an issue first to discuss the proposed modifications.
