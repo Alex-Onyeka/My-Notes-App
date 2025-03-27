@@ -211,7 +211,7 @@ class _NotesDetailsState extends State<NotesDetails> {
                                                   .bold,
                                           fontSize: 13,
                                         ),
-                                        'Choose Block Type:',
+                                        'Set Block Type',
                                       ),
                                     ],
                                   ),
@@ -280,7 +280,7 @@ class _NotesDetailsState extends State<NotesDetails> {
                                                       textEditingController
                                                           .text,
                                                   'type':
-                                                      selectedType,
+                                                      selectedValue,
                                                   'time':
                                                       Timestamp.now(),
                                                 },
