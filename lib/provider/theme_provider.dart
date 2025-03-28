@@ -5,7 +5,6 @@ import 'package:mynotes/themes/light_theme.dart';
 class ThemeProvider extends ChangeNotifier {
   final ThemeData _lightMode = lightMode;
   final ThemeData _darkMode = darkMode;
-  FireStoreService fireStoreService = FireStoreService();
 
   late bool isDarkMode;
 
@@ -13,9 +12,27 @@ class ThemeProvider extends ChangeNotifier {
   ThemeProvider() {
     mainTheme = _lightMode;
     isDarkMode = false;
+    setTheme();
   }
 
-  void changeTheme() {
+  FireStoreService fireStoreService = FireStoreService();
+  void setTheme() async {
+    final userDoc =
+        await fireStoreService.getCurrentUserDoc();
+    var userData = userDoc!.data();
+    bool userIsDarkTheme = userData!['is_dark'];
+
+    if (userIsDarkTheme == false) {
+      mainTheme = _lightMode;
+      isDarkMode = false;
+    } else {
+      mainTheme = _darkMode;
+      isDarkMode = true;
+    }
+    notifyListeners();
+  }
+
+  void changeTheme() async {
     if (mainTheme == _lightMode) {
       mainTheme = _darkMode;
       isDarkMode = true;
@@ -23,6 +40,13 @@ class ThemeProvider extends ChangeNotifier {
       mainTheme = _lightMode;
       isDarkMode = false;
     }
+
+    // Update Users IsDark Mode
+    final userDoc =
+        await fireStoreService.getCurrentUserDoc();
+    fireStoreService.userDb.doc(userDoc!.id).update({
+      'is_dark': isDarkMode,
+    });
     notifyListeners();
   }
 }

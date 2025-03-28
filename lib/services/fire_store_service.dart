@@ -31,9 +31,9 @@ class FireStoreService {
             .get();
 
     if (firstStep.docs.isNotEmpty) {
-      return firstStep.docs.first; // Return first document
+      return firstStep.docs.first;
     } else {
-      return null; // Return null if no document is found
+      return null;
     }
   }
 
