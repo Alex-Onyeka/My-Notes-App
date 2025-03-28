@@ -80,6 +80,7 @@ class AuthServices {
             'gender': gender,
             'uid': newUser.uid,
             'createdDate': Timestamp.now(),
+            'is_dark': false,
           });
         }
 
