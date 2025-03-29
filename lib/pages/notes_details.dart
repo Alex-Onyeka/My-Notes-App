@@ -9,6 +9,7 @@ import 'package:mynotes/components/floating_action_button.dart';
 import 'package:mynotes/components/template_note.dart';
 import 'package:mynotes/components/text_field_message_editnote.dart';
 import 'package:mynotes/pages/my_profile.dart';
+import 'package:mynotes/provider/main_provider.dart';
 import 'package:mynotes/provider/theme_provider.dart';
 import 'package:mynotes/services/fire_store_service.dart';
 import 'package:provider/provider.dart';
@@ -220,15 +221,24 @@ class _NotesDetailsState extends State<NotesDetails> {
                                     child: DropdownButton<
                                       String
                                     >(
-                                      value: selectedValue,
+                                      value:
+                                          Provider.of<
+                                            MainProvider
+                                          >(
+                                            context,
+                                          ).selectedValue,
                                       onChanged: (
                                         newValue,
                                       ) {
                                         {
-                                          setState(() {
-                                            selectedValue =
-                                                newValue!;
-                                          });
+                                          Provider.of<
+                                            MainProvider
+                                          >(
+                                            context,
+                                            listen: false,
+                                          ).selectNoteBlock(
+                                            newValue!,
+                                          );
                                         }
                                       },
                                       items:
@@ -268,24 +278,25 @@ class _NotesDetailsState extends State<NotesDetails> {
                                   MaterialButton(
                                     onPressed: () async {
                                       try {
-                                        FireStoreService()
-                                            .noteDb
-                                            .doc(
-                                              noteDoc['noteId'],
-                                            )
-                                            .update({
-                                              'noteM': FieldValue.arrayUnion([
-                                                {
-                                                  'text':
-                                                      textEditingController
-                                                          .text,
-                                                  'type':
-                                                      selectedValue,
-                                                  'time':
-                                                      Timestamp.now(),
-                                                },
-                                              ]),
-                                            });
+                                        FireStoreService().noteDb.doc(noteDoc['noteId']).update({
+                                          'noteM': FieldValue.arrayUnion([
+                                            {
+                                              'text':
+                                                  textEditingController
+                                                      .text,
+                                              'type':
+                                                  Provider.of<
+                                                    MainProvider
+                                                  >(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).selectedValue,
+                                              'time':
+                                                  Timestamp.now(),
+                                            },
+                                          ]),
+                                        });
                                         _getNoteDoc();
 
                                         if (!context
@@ -297,10 +308,13 @@ class _NotesDetailsState extends State<NotesDetails> {
                                         ).pop();
                                         textEditingController
                                             .clear();
-                                        setState(() {
-                                          selectedValue =
-                                              'Paragraph';
-                                        });
+                                        Provider.of<
+                                              MainProvider
+                                            >(
+                                              context,
+                                              listen: false,
+                                            ).selectedValue =
+                                            'Paragraph';
                                       } catch (e) {
                                         // print(
                                         //   e,

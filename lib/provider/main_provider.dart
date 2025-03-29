@@ -33,4 +33,12 @@ class MainProvider extends ChangeNotifier {
     selectedSort = tempSort;
     notifyListeners();
   }
+
+  List types = ['Title', 'Sub-Title', 'Paragraph'];
+  String selectedValue = 'Paragraph';
+
+  void selectNoteBlock(String value) {
+    selectedValue = value;
+    notifyListeners();
+  }
 }
