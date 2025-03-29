@@ -5,6 +5,7 @@ import 'package:mynotes/authentication/login_page.dart';
 import 'package:mynotes/components/alert_info.dart';
 import 'package:mynotes/pages/home.dart';
 import 'package:mynotes/provider/main_provider.dart';
+import 'package:mynotes/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class AuthServices {
@@ -85,6 +86,11 @@ class AuthServices {
         }
 
         if (!context.mounted) return;
+        await Provider.of<ThemeProvider>(
+          context,
+          listen: false,
+        ).setTheme();
+        if (!context.mounted) return;
 
         Navigator.pushReplacement(
           context,
@@ -139,11 +145,16 @@ class AuthServices {
         password: password,
       );
       if (!context.mounted) return;
-
+      await Provider.of<ThemeProvider>(
+        context,
+        listen: false,
+      ).setTheme();
+      if (!context.mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Home()),
       );
+      context.read<MainProvider>().stopLoading();
     } on FirebaseException catch (e) {
       context.read<MainProvider>().stopLoading();
       if (!context.mounted) return;

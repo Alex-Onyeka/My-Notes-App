@@ -16,7 +16,7 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   FireStoreService fireStoreService = FireStoreService();
-  void setTheme() async {
+  Future<void> setTheme() async {
     final userDoc =
         await fireStoreService.getCurrentUserDoc();
     var userData = userDoc!.data();
