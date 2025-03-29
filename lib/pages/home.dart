@@ -5,10 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:mynotes/authentication/login_page.dart';
 import 'package:mynotes/class/note_class.dart';
 import 'package:mynotes/class/note_item.dart';
+import 'package:mynotes/components/add_note_screen.dart';
 import 'package:mynotes/components/alert_info.dart';
 import 'package:mynotes/components/floating_action_button.dart';
 import 'package:mynotes/components/note_list_tile.dart';
-import 'package:mynotes/components/my_alert_box.dart';
 import 'package:mynotes/components/my_drawer.dart';
 import 'package:mynotes/components/profile_avatar.dart';
 import 'package:mynotes/components/sorting_alert_box.dart';
@@ -41,64 +41,60 @@ class _HomeState extends State<Home> {
   //
   //
   void addNewNote() async {
-    showDialog(
+    showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
-      builder:
-          (context) => MyAlertBox(
-            noteController: noteController,
-            titleController: titleController,
-            onPressed: () {
-              if (titleController.text.isEmpty ||
-                  noteController.text.isEmpty) {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertInfo(
-                      message:
-                          'You Must fill in the title and Notes Fields before creating new Note.',
-                      title: 'Empty Fields',
-                    );
-                  },
-                );
+      builder: (context) {
+        return AddNoteScreen(
+          noteController: noteController,
+          titleController: titleController,
+          onPressed: () {
+            if (titleController.text.isEmpty ||
+                noteController.text.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertInfo(
+                    message:
+                        'You Must fill in the title and Notes Fields before creating new Note.',
+                    title: 'Empty Fields',
+                  );
+                },
+              );
+            } else {
+              fireStoreService.createNote(
+                NoteClass(
+                  noteM: [
+                    NoteItem(
+                      time: Timestamp.now(),
+                      text: noteController.text,
+                      type: 'Paragraph',
+                    ),
+                  ],
+                  title: titleController.text,
+                  note: noteController.text,
+                  user: authServices.currentLoggedInUser(),
+                ),
+              );
+              Navigator.of(context).pop();
+              if (!context.mounted) {
+                return;
               } else {
-                fireStoreService.createNote(
-                  NoteClass(
-                    noteM: [
-                      NoteItem(
-                        time: Timestamp.now(),
-                        text: noteController.text,
-                        type: 'Paragraph',
-                      ),
-                    ],
-                    title: titleController.text,
-                    note: noteController.text,
-                    user:
-                        authServices.currentLoggedInUser(),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Note Added Successfully!',
+                    ),
                   ),
                 );
-                Navigator.of(context).pop();
-                if (!context.mounted) {
-                  return;
-                } else {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Note Added Successfully!',
-                      ),
-                    ),
-                  );
-                }
-                titleController.clear();
-                noteController.clear();
               }
-            },
-          ),
-    ).then((value) {
-      titleController.clear();
-      noteController.clear();
-    });
+              titleController.clear();
+              noteController.clear();
+            }
+          },
+        );
+      },
+    );
   }
 
   //

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mynotes/components/are_you_sure_alert_box.dart';
 import 'package:mynotes/components/details_info_tab.dart';
+import 'package:mynotes/components/edit_add_new_text_block.dart';
 import 'package:mynotes/components/edit_note_alert_box.dart';
+import 'package:mynotes/components/edit_note_screen.dart';
 import 'package:mynotes/components/floating_action_button.dart';
 import 'package:mynotes/components/template_note.dart';
 import 'package:mynotes/components/text_field_message_editnote.dart';
@@ -153,208 +155,53 @@ class _NotesDetailsState extends State<NotesDetails> {
                 child: MyFloatingActionButton(
                   isEdit: false,
                   onTap: () {
-                    showDialog(
+                    showModalBottomSheet(
+                      isScrollControlled: true,
                       context: context,
                       builder: (context) {
-                        return AlertDialog(
-                          title: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 10.0,
-                            ),
-                            child: Text(
-                              style: TextStyle(
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Add Text Block',
-                            ),
-                          ),
-                          content: Column(
-                            spacing: 15,
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: [
-                              TextFieldMessageEditnote(
-                                controller:
-                                    textEditingController,
-                                hint: 'Enter your note',
-                                value:
-                                    textEditingController
-                                        .text,
-                              ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.start,
-                                spacing: 10,
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          color:
-                                              Theme.of(
-                                                    context,
-                                                  )
-                                                  .colorScheme
-                                                  .secondary,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          fontSize: 13,
-                                        ),
-                                        'Set Block Type',
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 30,
-                                    child: DropdownButton<
-                                      String
-                                    >(
-                                      value:
-                                          Provider.of<
-                                            MainProvider
-                                          >(
-                                            context,
-                                          ).selectedValue,
-                                      onChanged: (
-                                        newValue,
-                                      ) {
-                                        {
-                                          Provider.of<
-                                            MainProvider
-                                          >(
-                                            context,
-                                            listen: false,
-                                          ).selectNoteBlock(
-                                            newValue!,
-                                          );
-                                        }
-                                      },
-                                      items:
-                                          [
-                                                "Title",
-                                                "Sub-title",
-                                                "Paragraph",
-                                              ]
-                                              .map(
-                                                (
-                                                  String
-                                                  item,
-                                                ) => DropdownMenuItem<
-                                                  String
-                                                >(
-                                                  value:
-                                                      item,
-                                                  child:
-                                                      Text(
-                                                        item,
-                                                      ),
-                                                ),
-                                              )
-                                              .toList(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                spacing: 10,
-                                children: [
-                                  MaterialButton(
-                                    onPressed: () async {
-                                      try {
-                                        FireStoreService().noteDb.doc(noteDoc['noteId']).update({
-                                          'noteM': FieldValue.arrayUnion([
-                                            {
-                                              'text':
-                                                  textEditingController
-                                                      .text,
-                                              'type':
-                                                  Provider.of<
-                                                    MainProvider
-                                                  >(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).selectedValue,
-                                              'time':
-                                                  Timestamp.now(),
-                                            },
-                                          ]),
-                                        });
-                                        _getNoteDoc();
-
-                                        if (!context
-                                            .mounted) {
-                                          return;
-                                        }
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
-                                        textEditingController
-                                            .clear();
-                                        Provider.of<
+                        return EditAddNewTextBlock(
+                          noteController:
+                              textEditingController,
+                          onPressed: () {
+                            try {
+                              FireStoreService().noteDb
+                                  .doc(noteDoc['noteId'])
+                                  .update({
+                                    'noteM': FieldValue.arrayUnion([
+                                      {
+                                        'text':
+                                            textEditingController
+                                                .text,
+                                        'type':
+                                            Provider.of<
                                               MainProvider
                                             >(
                                               context,
                                               listen: false,
-                                            ).selectedValue =
-                                            'Paragraph';
-                                      } catch (e) {
-                                        // print(
-                                        //   e,
-                                        // );
-                                      }
-                                    },
-                                    child: Text(
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                                  context,
-                                                )
-                                                .colorScheme
-                                                .primary,
-                                      ),
-                                      'Save Note',
-                                    ),
-                                  ),
-                                  MaterialButton(
-                                    onPressed: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                    },
-                                    child: Text(
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                                  context,
-                                                )
-                                                .colorScheme
-                                                .secondary,
-                                      ),
-                                      'Cancel',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                            ).selectedValue,
+                                        'time':
+                                            Timestamp.now(),
+                                      },
+                                    ]),
+                                  });
+                              _getNoteDoc();
+
+                              if (!context.mounted) {
+                                return;
+                              }
+                              Navigator.of(context).pop();
+                              textEditingController.clear();
+                              Provider.of<MainProvider>(
+                                    context,
+                                    listen: false,
+                                  ).selectedValue =
+                                  'Paragraph';
+                            } catch (e) {
+                              // print(
+                              //   e,
+                              // );
+                            }
+                          },
                         );
                       },
                     );
@@ -855,213 +702,190 @@ class _NotesDetailsState extends State<NotesDetails> {
                                         setTextController(
                                           noteItems[index]['text'],
                                         );
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return AlertDialog(
-                                              title: Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      top:
-                                                          10.0,
+                                        if (type ==
+                                            'Paragraph') {
+                                          showModalBottomSheet(
+                                            isScrollControlled:
+                                                true,
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return EditNoteScreen(
+                                                noteController:
+                                                    textEditingController,
+                                                onPressed: () async {
+                                                  try {
+                                                    List
+                                                    noteItems =
+                                                        noteDoc['noteM'];
+                                                    noteItems[index]['text'] =
+                                                        textEditingController.text; // Modify the specific item
+
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection(
+                                                          'notes',
+                                                        )
+                                                        .doc(
+                                                          noteDoc['noteId'],
+                                                        )
+                                                        .update({
+                                                          'noteM':
+                                                              noteItems, // Update the modified array back to Firestore
+                                                        });
+
+                                                    _getNoteDoc();
+
+                                                    if (!context
+                                                        .mounted) {
+                                                      return;
+                                                    }
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                    textEditingController
+                                                        .clear();
+                                                  } catch (
+                                                    e
+                                                  ) {
+                                                    // print(
+                                                    //   e,
+                                                    // );
+                                                  }
+                                                },
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return AlertDialog(
+                                                title: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        top:
+                                                            10.0,
+                                                      ),
+                                                  child: Text(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Theme.of(
+                                                            context,
+                                                          ).colorScheme.primary,
+                                                      fontSize:
+                                                          18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                child: Text(
-                                                  style: TextStyle(
-                                                    color:
-                                                        Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary,
-                                                    fontSize:
-                                                        18,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    'Edit Text Block',
                                                   ),
-                                                  'Edit Text Block',
                                                 ),
-                                              ),
-                                              content: Column(
-                                                spacing: 15,
-                                                mainAxisSize:
-                                                    MainAxisSize
-                                                        .min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .center,
-                                                children: [
-                                                  TextFieldMessageEditnote(
-                                                    controller:
-                                                        textEditingController,
-                                                    hint:
-                                                        'Enter your note',
-                                                    value:
-                                                        textEditingController.text,
-                                                  ),
-                                                  // Column(
-                                                  //   mainAxisAlignment:
-                                                  //       MainAxisAlignment
-                                                  //           .start,
-                                                  //   spacing: 10,
-                                                  //   mainAxisSize:
-                                                  //       MainAxisSize
-                                                  //           .min,
-                                                  //   children: [
-                                                  //     Row(
-                                                  //       mainAxisAlignment:
-                                                  //           MainAxisAlignment
-                                                  //               .start,
-                                                  //       children: [
-                                                  //         Text(
-                                                  //           'Save Type:',
-                                                  //         ),
-                                                  //       ],
-                                                  //     ),
-                                                  //     SizedBox(
-                                                  //       height:
-                                                  //           30,
-                                                  //       child: DropdownButton<
-                                                  //         String
-                                                  //       >(
-                                                  //         hint: Text(
-                                                  //           'Paragraph',
-                                                  //         ),
-                                                  //         value:
-                                                  //             selectedValue,
-                                                  //         onChanged: (
-                                                  //           newValue,
-                                                  //         ) {
-                                                  //           setState(() {
-                                                  //             selectedValue =
-                                                  //                 newValue;
-                                                  //             selectedType =
-                                                  //                 newValue!;
-                                                  //           });
-                                                  //         },
-                                                  //         items:
-                                                  //             [
-                                                  //                   "Title",
-                                                  //                   "Sub-title",
-                                                  //                   "Paragraph",
-                                                  //                 ]
-                                                  //                 .map(
-                                                  //                   (
-                                                  //                     String item,
-                                                  //                   ) => DropdownMenuItem<
-                                                  //                     String
-                                                  //                   >(
-                                                  //                     value:
-                                                  //                         item,
-                                                  //                     child: Text(
-                                                  //                       item,
-                                                  //                     ),
-                                                  //                   ),
-                                                  //                 )
-                                                  //                 .toList(),
-                                                  //       ),
-                                                  //     ),
-                                                  //   ],
-                                                  // ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    spacing:
-                                                        10,
-                                                    children: [
-                                                      MaterialButton(
-                                                        onPressed: () async {
-                                                          try {
-                                                            List
-                                                            noteItems =
-                                                                noteDoc['noteM'];
-                                                            noteItems[index]['text'] =
-                                                                textEditingController.text; // Modify the specific item
+                                                content: Column(
+                                                  spacing:
+                                                      15,
+                                                  mainAxisSize:
+                                                      MainAxisSize
+                                                          .min,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .center,
+                                                  children: [
+                                                    TextFieldMessageEditnote(
+                                                      controller:
+                                                          textEditingController,
+                                                      hint:
+                                                          'Enter your note',
+                                                      value:
+                                                          textEditingController.text,
+                                                    ),
 
-                                                            await FirebaseFirestore.instance
-                                                                .collection(
-                                                                  'notes',
-                                                                )
-                                                                .doc(
-                                                                  noteDoc['noteId'],
-                                                                )
-                                                                .update(
-                                                                  {
-                                                                    'noteM':
-                                                                        noteItems, // Update the modified array back to Firestore
-                                                                  },
-                                                                );
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.center,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      spacing:
+                                                          10,
+                                                      children: [
+                                                        MaterialButton(
+                                                          onPressed: () async {
+                                                            try {
+                                                              List noteItems =
+                                                                  noteDoc['noteM'];
+                                                              noteItems[index]['text'] =
+                                                                  textEditingController.text; // Modify the specific item
 
-                                                            // FireStoreService()
-                                                            //     .noteDb
-                                                            //     .doc(
-                                                            //       noteDoc['noteId'],
-                                                            //     )
-                                                            //     .update({
-                                                            //       'noteM': FieldValue.arrayUnion(
-                                                            //         [
-                                                            //           {
-                                                            //             'text':
-                                                            //                 textEditingController.text,
-                                                            //             'type':
-                                                            //                 selectedType,
-                                                            //             'time':
-                                                            //                 Timestamp.now(),
-                                                            //           },
-                                                            //         ],
-                                                            //       ),
-                                                            //     });
-                                                            _getNoteDoc();
+                                                              await FirebaseFirestore.instance
+                                                                  .collection(
+                                                                    'notes',
+                                                                  )
+                                                                  .doc(
+                                                                    noteDoc['noteId'],
+                                                                  )
+                                                                  .update(
+                                                                    {
+                                                                      'noteM':
+                                                                          noteItems, // Update the modified array back to Firestore
+                                                                    },
+                                                                  );
 
-                                                            if (!context.mounted) {
-                                                              return;
+                                                              _getNoteDoc();
+
+                                                              if (!context.mounted) {
+                                                                return;
+                                                              }
+                                                              Navigator.of(
+                                                                context,
+                                                              ).pop();
+                                                              textEditingController.clear();
+                                                            } catch (
+                                                              e
+                                                            ) {
+                                                              // print(
+                                                              //   e,
+                                                              // );
                                                             }
+                                                          },
+                                                          child: Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Theme.of(
+                                                                    context,
+                                                                  ).colorScheme.primary,
+                                                            ),
+                                                            'Save Note',
+                                                          ),
+                                                        ),
+                                                        MaterialButton(
+                                                          onPressed: () {
                                                             Navigator.of(
                                                               context,
                                                             ).pop();
-                                                            textEditingController.clear();
-                                                          } catch (
-                                                            e
-                                                          ) {
-                                                            // print(
-                                                            //   e,
-                                                            // );
-                                                          }
-                                                        },
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            color:
-                                                                Theme.of(
-                                                                  context,
-                                                                ).colorScheme.primary,
+                                                          },
+                                                          child: Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Theme.of(
+                                                                    context,
+                                                                  ).colorScheme.secondary,
+                                                            ),
+                                                            'Cancel',
                                                           ),
-                                                          'Save Note',
                                                         ),
-                                                      ),
-                                                      MaterialButton(
-                                                        onPressed: () {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                        },
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            color:
-                                                                Theme.of(
-                                                                  context,
-                                                                ).colorScheme.secondary,
-                                                          ),
-                                                          'Cancel',
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        );
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }
                                       },
                                     ),
                                   );
