@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/authentication/login_page.dart';
 import 'package:mynotes/class/note_class.dart';
 import 'package:mynotes/class/note_item.dart';
+import 'package:mynotes/components/add_note_screen.dart';
 import 'package:mynotes/components/alert_info.dart';
 import 'package:mynotes/components/are_you_sure_alert_box.dart';
 import 'package:mynotes/components/edit_name_alertbox.dart';
-import 'package:mynotes/components/my_alert_box.dart';
 import 'package:mynotes/components/profile_menu_list.dart';
 import 'package:mynotes/provider/theme_provider.dart';
 import 'package:mynotes/services/auth_services.dart';
@@ -56,77 +56,59 @@ class _MyProfileState extends State<MyProfile> {
   //
   //
   void addNewNote() {
-    showDialog(
+    showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (context) {
-        return MyAlertBox(
+        return AddNoteScreen(
           noteController: note,
           titleController: title,
-          onPressed: () async {
-            try {
-              if (title.text.isEmpty || note.text.isEmpty) {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertInfo(
-                      title: 'Field(s) Empty',
-                      message:
-                          'You need to fill all fields to Successfully complete action.',
-                    );
-                  },
-                );
-              } else {
-                fireStoreService.createNote(
-                  NoteClass(
-                    noteM: [
-                      NoteItem(
-                        time: Timestamp.now(),
-                        text: note.text,
-                        type: 'Paragraph',
-                      ),
-                    ],
-                    title: title.text,
-                    note: note.text,
-                    user:
-                        authServices.currentLoggedInUser(),
-                  ),
-                );
-                await Future.delayed(
-                  Duration(milliseconds: 500),
-                );
-                if (!context.mounted) {
-                  return;
-                }
-                Navigator.of(context).pop();
-
-                title.clear();
-                note.clear();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Note Created Successfully!',
-                    ),
-                  ),
-                );
-              }
-            } on FirebaseException catch (e) {
+          onPressed: () {
+            if (title.text.isEmpty || note.text.isEmpty) {
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertInfo(
-                    title: 'Error Encounterd',
-                    message: e.message.toString(),
+                    message:
+                        'You Must fill in the title and Notes Fields before creating new Note.',
+                    title: 'Empty Fields',
                   );
                 },
               );
+            } else {
+              fireStoreService.createNote(
+                NoteClass(
+                  noteM: [
+                    NoteItem(
+                      time: Timestamp.now(),
+                      text: note.text,
+                      type: 'Paragraph',
+                    ),
+                  ],
+                  title: title.text,
+                  note: note.text,
+                  user: authServices.currentLoggedInUser(),
+                ),
+              );
+              Navigator.of(context).pop();
+              if (!context.mounted) {
+                return;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Note Added Successfully!',
+                    ),
+                  ),
+                );
+              }
+              title.clear();
+              note.clear();
             }
           },
         );
       },
-    ).then((value) {
-      title.clear();
-      note.clear();
-    });
+    );
   }
 
   //
@@ -294,6 +276,7 @@ class _MyProfileState extends State<MyProfile> {
     super.dispose();
     title.dispose();
     note.dispose();
+    name.dispose();
     password.dispose();
     confirmPassword.dispose();
   }

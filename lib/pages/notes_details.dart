@@ -444,6 +444,15 @@ class _NotesDetailsState extends State<NotesDetails> {
                                                 )
                                                 ..pop()
                                                 ..pop();
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Note Deleted Successfully!',
+                                                  ),
+                                                ),
+                                              );
                                             },
                                           );
                                         },
@@ -581,15 +590,52 @@ class _NotesDetailsState extends State<NotesDetails> {
                             ),
                             SizedBox(
                               height:
-                                  hideHeader
+                                  FirebaseAuth
+                                                  .instance
+                                                  .currentUser!
+                                                  .uid ==
+                                              noteDoc['user'] &&
+                                          hideHeader
                                       ? MediaQuery.of(
                                             context,
                                           ).size.height *
-                                          0.68
+                                          0.69
+                                      : FirebaseAuth
+                                                  .instance
+                                                  .currentUser!
+                                                  .uid !=
+                                              noteDoc['user'] &&
+                                          hideHeader
+                                      ? MediaQuery.of(
+                                            context,
+                                          ).size.height *
+                                          0.75
+                                      : FirebaseAuth
+                                                  .instance
+                                                  .currentUser!
+                                                  .uid ==
+                                              noteDoc['user'] &&
+                                          hideHeader ==
+                                              false
+                                      ? MediaQuery.of(
+                                            context,
+                                          ).size.height *
+                                          0.54
+                                      : FirebaseAuth
+                                                  .instance
+                                                  .currentUser!
+                                                  .uid !=
+                                              noteDoc['user'] &&
+                                          hideHeader ==
+                                              false
+                                      ? MediaQuery.of(
+                                            context,
+                                          ).size.height *
+                                          0.60
                                       : MediaQuery.of(
                                             context,
                                           ).size.height *
-                                          0.50,
+                                          0.54,
 
                               child: ListView.builder(
                                 primary: false,
