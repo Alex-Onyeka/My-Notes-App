@@ -17,13 +17,8 @@ import 'package:mynotes/services/fire_store_service.dart';
 import 'package:provider/provider.dart';
 
 class NotesDetails extends StatefulWidget {
-  final String? beans;
   final String noteId;
-  const NotesDetails({
-    super.key,
-    required this.noteId,
-    this.beans,
-  });
+  const NotesDetails({super.key, required this.noteId});
 
   @override
   State<NotesDetails> createState() => _NotesDetailsState();
